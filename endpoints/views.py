@@ -37,7 +37,14 @@ def login(request):
 def obtenerPeliculas(request):
     if request.method == "GET":
         categoria = request.GET.get("categoria")
-        print(categoria)
+
+        if categoria == None:
+            dictError = {
+                "error": "Debe enviar una categoria como query paremeter."
+            }
+            strError = json.dumps(dictError)
+            return HttpResponse(strError)
+
         peliculas = [
             {
                 "id": 1,
@@ -57,15 +64,15 @@ def obtenerPeliculas(request):
             }
         ]
 
-        def logicaFiltrado(pelicula):
-            print(categoria)
-            if categoria == pelicula["categoria"]:
-                return True
-            else:
-                return False
-
-        peliculasFiltradas = filter(logicaFiltrado, peliculas)
-
+        peliculasFiltradas = []
+        if categoria == "-1":
+            # No se debe filtrar nana
+            peliculasFiltradas = peliculas
+        else :
+            for p in peliculas:
+                if p["categoria"] == int(categoria):
+                    peliculasFiltradas.append(p)
+        
         # TODO: Consultas a bd
         dictResponse = {
             "error": "",
