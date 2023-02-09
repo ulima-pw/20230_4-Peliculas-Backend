@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 import json
+from .models import Categoria
 
 # /endpoints/login
 @csrf_exempt
@@ -80,6 +82,30 @@ def obtenerPeliculas(request):
         }
         strResponse = json.dumps(dictResponse)
         return HttpResponse(strResponse)
+    else:
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+
+def obtenerCategorias(request):
+    if request.method == "GET":
+        listaCategoriasQuerySet = Categoria.objects.filter(estado="A")
+        listaCategorias = []
+        for c in listaCategoriasQuerySet:
+            listaCategorias.append({
+                "id" : c.id,
+                "nombre" : c.nombre
+            })
+
+        dictOK = {
+            "error" : "",
+            "categorias" : listaCategorias
+        }
+        return HttpResponse(json.dumps(dictOK))
+
     else:
         dictError = {
             "error": "Tipo de peticion no existe"
