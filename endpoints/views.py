@@ -1,10 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 # /endpoints/login
-
-
+@csrf_exempt
 def login(request):
     if request.method == "POST":
         dictDataRequest = json.loads(request.body)
