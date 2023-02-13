@@ -112,3 +112,36 @@ def obtenerCategorias(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
+
+"""
+Path: /endpoints/categorias/crear POST
+Request:
+{
+    "nombre" : "...",
+    "estado" : "A"
+}
+Response:
+{
+    "error" : ""
+}
+"""
+@csrf_exempt
+def registrarCategoria(request):
+    if request.method != "POST":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    dictCategoria = json.loads(request.body)
+    nombre = dictCategoria["nombre"]
+    estado = dictCategoria["estado"]
+
+    cat = Categoria(nombre=nombre, estado=estado)
+    cat.save() # Registra en la bd la nueva categoria
+
+    dictOK = {
+        "error" : ""
+    }
+    return HttpResponse(json.dumps(dictOK))
