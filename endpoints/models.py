@@ -1,12 +1,5 @@
 from django.db import models
 
-class Pelicula(models.Model):
-    nombre = models.CharField(max_length=100)
-    url = models.URLField()
-
-    def __str__(self):
-        return self.nombre
-
 class Categoria(models.Model):
     CATEGORIA_ESTADOS = (
         ("A", "Activo"),
@@ -17,3 +10,13 @@ class Categoria(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class Pelicula(models.Model):
+    nombre = models.CharField(max_length=100)
+    url = models.URLField()
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nombre
+
+

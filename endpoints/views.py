@@ -145,3 +145,69 @@ def registrarCategoria(request):
         "error" : ""
     }
     return HttpResponse(json.dumps(dictOK))
+
+"""
+Path: /endpoints/categorias/modificar POST
+Request:
+{
+    "id" : 1,
+    "nombre"? : "...",
+    "estado"? : "A"
+}
+Response:
+{
+    "error" : ""
+}
+"""
+@csrf_exempt
+def modificarCategoria(request):
+    if request.method != "POST":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+    
+    dictCategoria = json.loads(request.body)
+
+    identificador = dictCategoria["id"]
+    cat = Categoria.objects.get(pk=identificador) # Obtenemos cat de bd
+
+    if dictCategoria.get("nombre") != None:
+        cat.nombre = dictCategoria.get("nombre")
+
+    if dictCategoria.get("estado") != None:
+        cat.estado = dictCategoria.get("estado")
+
+    cat.save() # Se modifica la bd
+
+    dictOK = {
+        "error" : ""
+    }
+    return HttpResponse(json.dumps(dictOK))
+
+
+def eliminarCategoria(request):
+    if request.method != "GET":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    idCategoria = request.GET.get("id")
+    
+    if idCategoria == None:
+        dictError = {
+            "error": "Debe enviar un id de categoria para eliminarla."
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    cat = Categoria.objects.get(pk=idCategoria) # Obtengo categoria de la bd
+    cat.delete()  # elimino categoria de la bd
+
+    dictOK = {
+        "error" : ""
+    }
+    return HttpResponse(json.dumps(dictOK))

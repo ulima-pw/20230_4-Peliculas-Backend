@@ -5,5 +5,7 @@ urlpatterns = [
     path("login", views.login),
     path("peliculas/listar", views.obtenerPeliculas),
     path("categorias/listar", views.obtenerCategorias),
-    path("categorias/crear", views.registrarCategoria)
+    path("categorias/crear", views.registrarCategoria),
+    path("categorias/modificar", views.modificarCategoria),
+    path("categorias/eliminar", views.eliminarCategoria)
 ]
