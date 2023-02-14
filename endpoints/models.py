@@ -14,7 +14,7 @@ class Categoria(models.Model):
 class Pelicula(models.Model):
     nombre = models.CharField(max_length=100)
     url = models.URLField()
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.nombre
