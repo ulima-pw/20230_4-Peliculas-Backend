@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json
-from .models import Categoria
+from .models import Categoria, Pelicula
 
 # /endpoints/login
 @csrf_exempt
@@ -38,47 +38,36 @@ def login(request):
 
 def obtenerPeliculas(request):
     if request.method == "GET":
-        categoria = request.GET.get("categoria")
+        idCategoria = request.GET.get("categoria")
 
-        if categoria == None:
+        if idCategoria == None:
             dictError = {
                 "error": "Debe enviar una categoria como query paremeter."
             }
             strError = json.dumps(dictError)
             return HttpResponse(strError)
 
-        peliculas = [
-            {
-                "id": 1,
-                "nombre": "Avatar 2",
-                "url": "https://i.blogs.es/6b43d1/avatar-edicion-especial-cartel/450_1000.jpg",
-                "categoria": 1
-            }, {
-                "id": 2,
-                "nombre": "El gato con botas",
-                "url": "https://www.universalpictures-latam.com/tl_files/content/movies/puss_in_boots_2/posters/01.jpg",
-                "categoria": 2
-            }, {
-                "id": 3,
-                "nombre": "Transformer, el despertar de las bestias",
-                "url": "https://es.web.img3.acsta.net/pictures/22/12/02/09/33/5399733.jpg",
-                "categoria": 3
-            }
-        ]
-
         peliculasFiltradas = []
-        if categoria == "-1":
-            # No se debe filtrar nana
-            peliculasFiltradas = peliculas
-        else :
-            for p in peliculas:
-                if p["categoria"] == int(categoria):
-                    peliculasFiltradas.append(p)
+
+        if idCategoria == "-1" :
+            peliculasQS = Pelicula.objects.all()
+        else:
+            peliculasQS = Pelicula.objects.filter(categoria__pk=idCategoria)
         
-        # TODO: Consultas a bd
+        for p in peliculasQS:
+            peliculasFiltradas.append({
+                "id" : p.pk,
+                "nombre" : p.nombre,
+                "url" : p.url,
+                "categoria" : {
+                    "id" : p.categoria.pk,
+                    "nombre" : p.categoria.nombre
+                }
+            })
+
         dictResponse = {
             "error": "",
-            "peliculas": list(peliculasFiltradas)
+            "peliculas": peliculasFiltradas
         }
         strResponse = json.dumps(dictResponse)
         return HttpResponse(strResponse)
