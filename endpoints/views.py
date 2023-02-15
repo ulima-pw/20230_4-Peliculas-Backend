@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json
-from .models import Categoria, Pelicula
+from .models import Actor, Categoria, Pelicula, PeliculaXActor
 
 # /endpoints/login
 @csrf_exempt
@@ -77,6 +77,32 @@ def obtenerPeliculas(request):
         }
         strError = json.dumps(dictError)
         return HttpResponse(strError)
+
+# /endpoinst/peliculas/listar_nombre?nombre=werwer
+def obtenerPeliculasPorNombre(request):
+    if request.method != "GET":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    nombreAFiltrar = request.GET.get("nombre")
+
+    peliculasQS = Pelicula.objects.filter(nombre__contains=nombreAFiltrar)
+
+    peliculas = []
+    for p in peliculasQS:
+        peliculas.append({
+            "id" : p.id,
+            "nombre" : p.nombre
+        })
+
+    dictOK = {
+        "error" : "",
+        "peliculas" : peliculas
+    }
+    return HttpResponse(json.dumps(dictOK))
 
 
 def obtenerCategorias(request):
@@ -200,3 +226,40 @@ def eliminarCategoria(request):
         "error" : ""
     }
     return HttpResponse(json.dumps(dictOK))
+
+# /endpoints/actores/listar?pelicula=2
+def obtenerActores(request):
+    if request.method != "GET":
+        dictError = {
+            "error": "Tipo de peticion no existe"
+        }
+        strError = json.dumps(dictError)
+        return HttpResponse(strError)
+
+    peliculaId = request.GET.get("pelicula")
+
+    actores = []
+    if peliculaId == None:
+        # Devolver todas los actores
+        actoresQS = Actor.objects.all()
+        for a in actoresQS:
+            actores.append({
+                "id" : a.pk,
+                "nombre" : a.nombre
+            })
+    else :
+        # Filtrar por id de pelicula
+        peliculasxActorQS = PeliculaXActor.objects.filter(pelicula__pk=peliculaId)
+        for pa in peliculasxActorQS:
+            actores.append({
+                "id" : pa.actor.pk,
+                "nombre" : pa.actor.nombre
+            })
+
+    dictOK = {
+        "error" : "",
+        "actores" : actores
+    }
+    return HttpResponse(json.dumps(dictOK))
+
+    
