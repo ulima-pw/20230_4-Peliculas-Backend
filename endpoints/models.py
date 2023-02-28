@@ -29,6 +29,9 @@ class Actor(models.Model):
 
     def __str__(self):
         return self.nombre
+
+    class Meta:
+        verbose_name_plural = "Actores"
     
 class PeliculaXActor(models.Model):
     actor = models.ForeignKey(Actor, on_delete=models.CASCADE)
@@ -39,6 +42,10 @@ class PeliculaXActor(models.Model):
 
     def __str__(self):
         return f"{self.actor.nombre} - {self.pelicula.nombre}"
+
+    class Meta:
+        verbose_name = "Participación"
+        verbose_name_plural = "Participaciones"
 
 
 
